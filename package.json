@@ -1,0 +1,22 @@
+{
+  "name": "MaxWebsocket",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:istommao/MaxWebsocket.git",
+  "author": "CodeMax <CodeMax@max.com>",
+  "license": "MIT",
+  "scripts": {
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:serve": "vitepress serve docs",
+    "dev": "vitepress dev docs",
+    "start": "vitepress dev docs"
+  },
+  "devDependencies": {
+    "vitepress": "^1.0.0-alpha.19",
+    "vue": "^3.2.40"
+  },
+  "dependencies": {
+    "element-plus": "^2.2.17"
+  }
+}
