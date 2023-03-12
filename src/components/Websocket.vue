@@ -57,7 +57,7 @@ const WebSocketOnMessageHandler = (event) => {
   console.log('Message from server ', event.data);
 
   const item = {
-    "data": event.data,
+    "data": "↓ " + event.data,
     "length": event.data.length,
     "time": event.timeStamp
   };
@@ -93,7 +93,16 @@ const SendAction = async () => {
         return;
     }
 
-    WebSocketConn.send("test");
+  const item = {
+    "data": "↑ " + InputData.value,
+    "length": InputData.value.length,
+    "time": Date.now()
+  };
+
+   WebsocketTransportData.value.push(item);
+
+    WebSocketConn.send(InputData.value);
+
 }
 
 
@@ -135,7 +144,7 @@ const SendAction = async () => {
 
     </div>
      <div class="RightBox">
-          <el-table :data="WebsocketTransportData" stripe  height="350" style="width: 100%">
+          <el-table :data="WebsocketTransportData" border  height="350" style="width: 100%">
             <el-table-column prop="data" label="Data" width="280" />
             <el-table-column prop="length" label="Length" width="80" />
             <el-table-column prop="time" label="Time" />
@@ -152,11 +161,11 @@ const SendAction = async () => {
 }
 
 .LeftBox {
-  margin: 14px 0; flex:  1; border-right: 1px solid #ececec; padding: 20px;
+  margin: 14px 0; flex:  2; border: 1px solid #ececec; padding: 20px;
 }
 
 .RightBox {
-  margin: 14px 0; flex:  2;  padding: 20px;
+  margin: 14px 0; flex:  3;  padding: 20px;
 }
 
 .el-textarea__inner {
