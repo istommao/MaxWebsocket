@@ -27,9 +27,10 @@ var addr = flag.String("addr", "localhost:8380", "http service address")
 
 var upgrader = websocket.Upgrader{} // use default options
 
-// var MaxDB *pkg.BadgerDBWrap
+var MaxDB *pkg.BadgerDBWrap
+
 // var MaxDB *pkg.MgDB
-var MaxDB *pkg.InfluxStore
+// var MaxDB *pkg.InfluxStore
 
 var LOG *logrus.Logger
 
@@ -88,7 +89,12 @@ func QueueChannelHandler() {
 		select {
 		case envelop := <-DataQueueChan:
 			// fmt.Println(">>>", envelop.Key)
-			MaxDB.SaveMessage(envelop.Key, envelop.Payload)
+			// MaxDB.SaveMessage(envelop.Key, envelop.Payload)
+			err := MaxDB.BatchSet(envelop.Key, envelop.Payload)
+			if err != nil {
+				LOG.Fatal(err)
+				// fmt.Println(">>>", err.Error())
+			}
 
 			// err := MaxDB.SaveMessage(envelop.Key, envelop.Payload)
 
@@ -130,12 +136,12 @@ func main() {
 
 	LOG.SetOutput(logConf)
 
-	// MaxDB = InitDB()
-	// defer MaxDB.Close()
+	MaxDB = InitDB()
+	defer MaxDB.Close()
 
 	// MaxDB = pkg.NewMgDB()
-	MaxDB = pkg.NewInfluxDB()
-	defer MaxDB.Close()
+	// MaxDB = pkg.NewInfluxDB()
+	// defer MaxDB.Close()
 
 	go QueueChannelHandler()
 

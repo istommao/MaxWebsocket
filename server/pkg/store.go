@@ -1,12 +1,11 @@
 package pkg
 
-
 import (
 	"errors"
+	"fmt"
 
 	badger "github.com/dgraph-io/badger/v3"
 )
-
 
 func GetBadgerDBInstance(DBPath string) (*badger.DB, error) {
 
@@ -17,7 +16,6 @@ func GetBadgerDBInstance(DBPath string) (*badger.DB, error) {
 
 	return db, err
 }
-
 
 type BadgerDBWrap struct {
 	db *badger.DB
@@ -186,4 +184,20 @@ func (instance *BadgerDBWrap) BatchGet(keys []string) ([]map[string][]byte, erro
 		})
 
 	return dataList, err
+}
+
+func (instance *BadgerDBWrap) BatchSet(key string, value []byte) error {
+	wb := instance.db.NewWriteBatch()
+	defer wb.Cancel()
+	err := wb.SetEntry(badger.NewEntry([]byte(key), value).WithMeta(0))
+	if err != nil {
+		fmt.Println("Failed to write data to cache.", "key", string(key), "value", string(value), "err", err)
+		return err
+	}
+	err = wb.Flush()
+	if err != nil {
+		fmt.Println("Failed to flush data to cache.", "key", string(key), "value", string(value), "err", err)
+	}
+
+	return err
 }
