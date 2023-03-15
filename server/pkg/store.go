@@ -202,13 +202,13 @@ func (instance *BadgerDBWrap) BatchSet(key string, value []byte) error {
 	return err
 }
 
-func (instance *BadgerDBWrap) BatchSetList(dataList map[string][]byte) error {
+func (instance *BadgerDBWrap) BatchSetList(dataList *map[string][]byte) error {
 	wb := instance.db.NewWriteBatch()
 	defer wb.Cancel()
 
 	var err error
 
-	for key, value := range dataList {
+	for key, value := range *dataList {
 		err = wb.SetEntry(badger.NewEntry([]byte(key), value).WithMeta(0))
 		if err != nil {
 			fmt.Println("Failed to write data to cache.", "key", string(key), "value", string(value), "err", err)

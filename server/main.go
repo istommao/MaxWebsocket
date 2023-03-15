@@ -100,7 +100,7 @@ func QueueChannelHandler() {
 			// }
 
 			if len(DataList) >= BatchSize {
-				err := MaxDB.BatchSetList(DataList)
+				err := MaxDB.BatchSetList(&DataList)
 				if err != nil {
 					LOG.Fatal(err)
 				} else {
