@@ -23,7 +23,7 @@ type EventChanEnvelope struct {
 
 var DataQueueChan chan *EventChanEnvelope
 
-var addr = flag.String("addr", "localhost:8380", "http service address")
+var addr = flag.String("addr", "0.0.0.0:8380", "http service address")
 
 var upgrader = websocket.Upgrader{} // use default options
 
@@ -82,6 +82,10 @@ func WebsocketHandler(w http.ResponseWriter, r *http.Request) {
 
 func QueueChannelHandler() {
 
+	DataList := map[string][]byte{}
+
+	BatchSize := 1000
+
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()
 
@@ -90,10 +94,20 @@ func QueueChannelHandler() {
 		case envelop := <-DataQueueChan:
 			// fmt.Println(">>>", envelop.Key)
 			// MaxDB.SaveMessage(envelop.Key, envelop.Payload)
-			err := MaxDB.BatchSet(envelop.Key, envelop.Payload)
-			if err != nil {
-				LOG.Fatal(err)
-				// fmt.Println(">>>", err.Error())
+			// err := MaxDB.BatchSet(envelop.Key, envelop.Payload)
+			// if err != nil {
+			// 	LOG.Fatal(err)
+			// }
+
+			if len(DataList) >= BatchSize {
+				err := MaxDB.BatchSetList(DataList)
+				if err != nil {
+					LOG.Fatal(err)
+				} else {
+					DataList = map[string][]byte{}
+				}
+			} else {
+				DataList[envelop.Key] = envelop.Payload
 			}
 
 			// err := MaxDB.SaveMessage(envelop.Key, envelop.Payload)
